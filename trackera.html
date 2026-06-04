@@ -1,0 +1,1856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trackera — AI-Powered Trade Compliance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0B0F14;
+    --ink-soft: #1A2030;
+    --ink-mid: #2E3A50;
+    --surface: #F4F1EB;
+    --surface-warm: #EDE9E0;
+    --amber: #C8860A;
+    --amber-light: #E8A020;
+    --amber-pale: #FBF0D8;
+    --steel: #3A5A8C;
+    --steel-light: #5B82C0;
+    --muted: #6B7A94;
+    --rule: rgba(11,15,20,0.12);
+    --rule-warm: rgba(200,134,10,0.25);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 64px;
+    background: rgba(244,241,235,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+    color: var(--ink);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo .logo-mark {
+    width: 28px; height: 28px;
+    background: var(--ink);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .nav-logo .logo-mark::before {
+    content: '';
+    position: absolute;
+    width: 12px; height: 2px;
+    background: var(--amber);
+    top: 8px; left: 8px;
+    box-shadow: 0 5px 0 0 rgba(255,255,255,0.6), 0 10px 0 0 rgba(255,255,255,0.35);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--ink); }
+
+  .nav-cta {
+    background: var(--ink) !important;
+    color: var(--surface) !important;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 13px !important;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: var(--ink-mid) !important; }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    padding: 120px 48px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--rule) 1px, transparent 1px),
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px);
+    background-size: 64px 64px;
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .hero-bg-glow {
+    position: absolute;
+    top: -100px; right: -200px;
+    width: 700px; height: 700px;
+    background: radial-gradient(circle, rgba(200,134,10,0.12) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 28px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.1s forwards;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px; height: 1px;
+    background: var(--amber);
+  }
+
+  .hero-headline {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -2px;
+    color: var(--ink);
+    max-width: 900px;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.2s forwards;
+  }
+
+  .hero-headline em {
+    font-style: italic;
+    color: var(--amber);
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.35s forwards;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.45s forwards;
+  }
+
+  .btn-primary {
+    background: var(--ink);
+    color: var(--surface);
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    text-decoration: none;
+    letter-spacing: 0.01em;
+    transition: transform 0.15s, box-shadow 0.15s;
+    border: 2px solid var(--ink);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(11,15,20,0.2);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 500;
+    font-size: 14.5px;
+    text-decoration: none;
+    border: 1.5px solid var(--rule);
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .btn-secondary:hover {
+    border-color: var(--ink-mid);
+    background: var(--surface-warm);
+  }
+
+  .hero-stat-row {
+    display: flex;
+    gap: 48px;
+    margin-top: 72px;
+    padding-top: 40px;
+    border-top: 1px solid var(--rule);
+    opacity: 0;
+    animation: fadeUp 0.7s 0.6s forwards;
+  }
+
+  .hero-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .hero-stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -1px;
+  }
+
+  .hero-stat-num span { color: var(--amber); }
+
+  .hero-stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── PROBLEM ─── */
+  .section {
+    padding: 100px 48px;
+    position: relative;
+  }
+
+  .section-dark {
+    background: var(--ink);
+    color: var(--surface);
+  }
+
+  .section-amber {
+    background: var(--amber-pale);
+  }
+
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 20px;
+  }
+
+  .section-dark .section-tag { color: var(--amber-light); }
+
+  .section-tag::before {
+    content: '';
+    display: block;
+    width: 20px; height: 1px;
+    background: currentColor;
+  }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 4vw, 56px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 24px;
+  }
+
+  .section-dark .section-title { color: var(--surface); }
+
+  .section-subtitle {
+    font-size: 17px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.75;
+  }
+
+  .section-dark .section-subtitle { color: rgba(244,241,235,0.55); }
+
+  /* ─── PAIN POINTS ─── */
+  .pain-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 60px;
+    border: 2px solid var(--rule);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .pain-card {
+    background: var(--surface-warm);
+    padding: 36px 32px;
+    border-right: 1px solid var(--rule);
+    transition: background 0.2s;
+  }
+
+  .pain-card:nth-child(3n) { border-right: none; }
+  .pain-card:nth-child(n+4) { border-top: 1px solid var(--rule); }
+
+  .pain-card:hover { background: #E8E4D8; }
+
+  .pain-icon {
+    width: 40px; height: 40px;
+    background: var(--ink);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+  }
+
+  .pain-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+
+  .pain-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+  }
+
+  /* ─── PRODUCT ─── */
+  .product-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    margin-top: 60px;
+  }
+
+  .product-modules {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .product-module {
+    padding: 24px 28px;
+    border: 1.5px solid var(--rule);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+  }
+
+  .product-module.active {
+    border-color: var(--amber);
+    background: var(--amber-pale);
+  }
+
+  .product-module:hover:not(.active) {
+    border-color: var(--ink-mid);
+    background: var(--surface-warm);
+  }
+
+  .module-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .module-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    min-width: 24px;
+  }
+
+  .product-module.active .module-num { color: var(--amber); }
+
+  .module-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .module-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-top: 12px;
+    padding-left: 36px;
+    display: none;
+  }
+
+  .product-module.active .module-desc { display: block; }
+
+  .product-demo {
+    position: sticky;
+    top: 80px;
+  }
+
+  .demo-window {
+    background: var(--ink);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 32px 80px rgba(11,15,20,0.25);
+  }
+
+  .demo-titlebar {
+    background: var(--ink-soft);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .demo-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+  }
+
+  .demo-dot:nth-child(1) { background: #FF5F57; }
+  .demo-dot:nth-child(2) { background: #FEBC2E; }
+  .demo-dot:nth-child(3) { background: #28C840; }
+
+  .demo-url {
+    flex: 1;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(244,241,235,0.35);
+  }
+
+  .demo-body {
+    padding: 28px;
+    min-height: 380px;
+  }
+
+  .demo-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(244,241,235,0.35);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .demo-input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .demo-input {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: rgba(244,241,235,0.9);
+  }
+
+  .demo-btn {
+    background: var(--amber);
+    color: var(--ink);
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .demo-result {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .demo-result-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .demo-hs-code {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--amber-light);
+    letter-spacing: 2px;
+  }
+
+  .demo-confidence {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #28C840;
+    background: rgba(40,200,64,0.12);
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+
+  .demo-result-desc {
+    font-size: 12.5px;
+    color: rgba(244,241,235,0.55);
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+
+  .demo-duty-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .demo-duty-item {
+    background: rgba(255,255,255,0.05);
+    border-radius: 6px;
+    padding: 10px 12px;
+  }
+
+  .demo-duty-country {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(244,241,235,0.35);
+    margin-bottom: 4px;
+  }
+
+  .demo-duty-rate {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--surface);
+  }
+
+  .demo-flag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: rgba(40,200,64,0.1);
+    border: 1px solid rgba(40,200,64,0.2);
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: #28C840;
+  }
+
+  /* ─── HOW IT WORKS ─── */
+  .steps-layout {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 64px;
+    position: relative;
+  }
+
+  .steps-layout::before {
+    content: '';
+    position: absolute;
+    top: 28px; left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--amber-light), var(--amber-light), transparent);
+    opacity: 0.4;
+  }
+
+  .step {
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .step-circle {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--ink);
+    border: 2px solid var(--amber);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    color: var(--amber);
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--surface);
+    margin-bottom: 10px;
+  }
+
+  .step-desc {
+    font-size: 13.5px;
+    color: rgba(244,241,235,0.5);
+    line-height: 1.65;
+  }
+
+  /* ─── INTEGRATIONS ─── */
+  .integration-strip {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    overflow: hidden;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 28px 0;
+    position: relative;
+  }
+
+  .integration-scroll {
+    display: flex;
+    gap: 48px;
+    animation: scroll-left 20s linear infinite;
+    white-space: nowrap;
+    padding: 0 24px;
+  }
+
+  .integration-scroll span {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .integration-scroll span::before {
+    content: '◆';
+    color: var(--amber);
+    font-size: 8px;
+  }
+
+  @keyframes scroll-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ─── FOUNDER ─── */
+  .founder-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .founder-portrait {
+    aspect-ratio: 4/5;
+    background: var(--ink-soft);
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .founder-portrait-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 32px;
+    background: linear-gradient(180deg, transparent 40%, rgba(11,15,20,0.8) 100%);
+  }
+
+  .founder-initials {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -60%);
+    font-family: 'Syne', sans-serif;
+    font-size: 80px;
+    font-weight: 800;
+    color: rgba(255,255,255,0.06);
+    letter-spacing: -4px;
+    user-select: none;
+  }
+
+  .founder-portrait-accent {
+    position: absolute;
+    top: 0; right: 0;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(200,134,10,0.3), transparent);
+    border-radius: 0 16px 0 0;
+  }
+
+  .founder-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--surface);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 8px 14px;
+    border-radius: 40px;
+    margin-bottom: 12px;
+    backdrop-filter: blur(8px);
+  }
+
+  .founder-card-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--surface);
+  }
+
+  .founder-content {}
+
+  .founder-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: var(--ink);
+    line-height: 1.05;
+    margin-bottom: 6px;
+  }
+
+  .founder-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--amber);
+    letter-spacing: 0.06em;
+    margin-bottom: 32px;
+  }
+
+  .founder-bio {
+    font-size: 17px;
+    color: var(--ink-mid);
+    line-height: 1.75;
+    margin-bottom: 28px;
+    max-width: 560px;
+  }
+
+  .founder-bio strong { color: var(--ink); }
+
+  .founder-thesis {
+    background: var(--ink);
+    border-radius: 12px;
+    padding: 28px 32px;
+    position: relative;
+    overflow: hidden;
+    max-width: 560px;
+  }
+
+  .founder-thesis::before {
+    content: '"';
+    position: absolute;
+    top: -10px; left: 20px;
+    font-family: 'Syne', sans-serif;
+    font-size: 100px;
+    color: rgba(200,134,10,0.15);
+    line-height: 1;
+  }
+
+  .founder-thesis p {
+    font-family: 'Instrument Sans', sans-serif;
+    font-style: italic;
+    font-size: 16px;
+    color: rgba(244,241,235,0.8);
+    line-height: 1.7;
+    position: relative;
+    z-index: 1;
+  }
+
+  .founder-thesis .attribution {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    font-style: normal;
+    margin-top: 16px;
+    letter-spacing: 0.08em;
+  }
+
+  .founder-links {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .founder-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid var(--rule);
+    border-radius: 40px;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+
+  .founder-link:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+    background: var(--surface-warm);
+  }
+
+  /* ─── PRICING ─── */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 60px;
+  }
+
+  .pricing-card {
+    background: var(--surface-warm);
+    border: 1.5px solid var(--rule);
+    border-radius: 16px;
+    padding: 36px 32px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .pricing-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(11,15,20,0.1);
+  }
+
+  .pricing-card.featured {
+    background: var(--ink);
+    border-color: var(--amber);
+    color: var(--surface);
+  }
+
+  .pricing-badge {
+    position: absolute;
+    top: -12px; left: 50%;
+    transform: translateX(-50%);
+    background: var(--amber);
+    color: var(--ink);
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+    letter-spacing: 0.06em;
+  }
+
+  .pricing-tier {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .pricing-card.featured .pricing-tier { color: rgba(244,241,235,0.5); }
+
+  .pricing-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 44px;
+    font-weight: 800;
+    letter-spacing: -2px;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .pricing-card.featured .pricing-price { color: var(--surface); }
+
+  .pricing-price sup {
+    font-size: 22px;
+    font-weight: 600;
+    vertical-align: top;
+    margin-top: 8px;
+    display: inline-block;
+  }
+
+  .pricing-price sub {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0;
+  }
+
+  .pricing-card.featured .pricing-price sub { color: rgba(244,241,235,0.5); }
+
+  .pricing-desc {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .pricing-card.featured .pricing-desc { color: rgba(244,241,235,0.55); }
+
+  .pricing-divider {
+    height: 1px;
+    background: var(--rule);
+    margin-bottom: 24px;
+  }
+
+  .pricing-card.featured .pricing-divider { background: rgba(255,255,255,0.1); }
+
+  .pricing-feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13.5px;
+    color: var(--ink-mid);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .pricing-card.featured .pricing-feature { color: rgba(244,241,235,0.75); }
+
+  .pricing-check {
+    color: var(--amber);
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .pricing-cta {
+    display: block;
+    text-align: center;
+    margin-top: 28px;
+    padding: 13px;
+    border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    transition: all 0.2s;
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
+  }
+
+  .pricing-cta:hover { background: var(--ink); color: var(--surface); }
+
+  .pricing-card.featured .pricing-cta {
+    background: var(--amber);
+    color: var(--ink);
+    border-color: var(--amber);
+  }
+
+  .pricing-card.featured .pricing-cta:hover { background: var(--amber-light); border-color: var(--amber-light); }
+
+  /* ─── CTA SECTION ─── */
+  .cta-section {
+    background: var(--ink);
+    padding: 100px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(200,134,10,0.12), transparent);
+    pointer-events: none;
+  }
+
+  .cta-headline {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 5vw, 68px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    color: var(--surface);
+    line-height: 1.05;
+    margin-bottom: 24px;
+    position: relative;
+  }
+
+  .cta-headline em { color: var(--amber-light); font-style: italic; }
+
+  .cta-sub {
+    font-size: 17px;
+    color: rgba(244,241,235,0.5);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  .cta-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    position: relative;
+  }
+
+  .btn-amber {
+    background: var(--amber);
+    color: var(--ink);
+    padding: 15px 36px;
+    border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-amber:hover { background: var(--amber-light); transform: translateY(-2px); }
+
+  .btn-ghost {
+    background: transparent;
+    color: rgba(244,241,235,0.7);
+    padding: 15px 36px;
+    border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 500;
+    font-size: 15px;
+    text-decoration: none;
+    border: 1.5px solid rgba(255,255,255,0.15);
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.4); color: var(--surface); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: #080C10;
+    padding: 56px 48px 36px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .footer-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding-bottom: 48px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    gap: 60px;
+  }
+
+  .footer-brand {
+    max-width: 280px;
+  }
+
+  .footer-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--surface);
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+  }
+
+  .footer-tagline {
+    font-size: 13.5px;
+    color: rgba(244,241,235,0.4);
+    line-height: 1.65;
+  }
+
+  .footer-cols {
+    display: flex;
+    gap: 60px;
+  }
+
+  .footer-col-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: rgba(244,241,235,0.3);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .footer-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .footer-links a {
+    font-size: 13.5px;
+    color: rgba(244,241,235,0.5);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover { color: var(--surface); }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 28px;
+  }
+
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(244,241,235,0.25);
+    letter-spacing: 0.04em;
+  }
+
+  .footer-legal {
+    display: flex;
+    gap: 24px;
+  }
+
+  .footer-legal a {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(244,241,235,0.25);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .footer-legal a:hover { color: rgba(244,241,235,0.5); }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.65s, transform 0.65s;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── PAGE SECTIONS TABS ─── */
+  .page-section {
+    display: none;
+  }
+
+  .page-section.active {
+    display: block;
+  }
+
+  /* ─── MOBILE NAV ─── */
+  .nav-hamburger {
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .nav-hamburger span {
+    display: block;
+    width: 22px; height: 2px;
+    background: var(--ink);
+    border-radius: 2px;
+  }
+
+  /* ─── TRUST BAR ─── */
+  .trust-bar {
+    background: var(--ink);
+    padding: 12px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .trust-bar span {
+    font-family: 'DM Mono', monospace;
+    font-size: 11.5px;
+    color: rgba(244,241,235,0.5);
+    letter-spacing: 0.04em;
+  }
+
+  .trust-bar .divider {
+    color: rgba(200,134,10,0.4);
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .hero { padding: 96px 24px 60px; }
+    .hero-stat-row { flex-wrap: wrap; gap: 28px; }
+    .section { padding: 72px 24px; }
+    .pain-grid { grid-template-columns: 1fr; }
+    .pain-card { border-right: none; border-bottom: 1px solid var(--rule); }
+    .pain-card:last-child { border-bottom: none; }
+    .product-layout { grid-template-columns: 1fr; }
+    .steps-layout { grid-template-columns: 1fr 1fr; }
+    .steps-layout::before { display: none; }
+    .founder-layout { grid-template-columns: 1fr; }
+    .founder-portrait { aspect-ratio: 3/2; max-width: 100%; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .footer-top { flex-direction: column; }
+    .footer-cols { flex-wrap: wrap; gap: 32px; }
+    .cta-actions { flex-direction: column; align-items: center; }
+    .trust-bar { padding: 12px 24px; flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <span>SOC 2 Type II Certified</span>
+  <span class="divider">·</span>
+  <span>WCO HS 2025 compliant</span>
+  <span class="divider">·</span>
+  <span>220+ jurisdictions covered</span>
+  <span class="divider">·</span>
+  <span>OFAC · EU · UN sanctions lists</span>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo" onclick="showPage('home')">
+    <div class="logo-mark"></div>
+    trackera
+  </a>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('home'); scrollTo('#product')">Product</a></li>
+    <li><a href="#" onclick="showPage('home'); scrollTo('#how')">How it works</a></li>
+    <li><a href="#" onclick="showPage('founder')">Founder</a></li>
+    <li><a href="#" onclick="showPage('pricing')">Pricing</a></li>
+    <li><a href="#" class="nav-cta btn-primary" onclick="showPage('contact')">Request Access</a></li>
+  </ul>
+  <div class="nav-hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ══════════════ HOME PAGE ══════════════ -->
+<div id="page-home" class="page-section active">
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-bg-grid"></div>
+    <div class="hero-bg-glow"></div>
+
+    <div class="hero-eyebrow">Trade Compliance Intelligence</div>
+
+    <h1 class="hero-headline">
+      Global trade.<br>
+      <em>Zero guesswork.</em>
+    </h1>
+
+    <p class="hero-sub">
+      Trackera replaces manual HS code lookups, broker dependency, and compliance guesswork with AI that classifies, calculates, screens, and clears — in seconds, not days.
+    </p>
+
+    <div class="hero-actions">
+      <a href="#" class="btn-primary" onclick="showPage('contact')">Get Early Access</a>
+      <a href="#product" class="btn-secondary">See the Product →</a>
+    </div>
+
+    <div class="hero-stat-row">
+      <div class="hero-stat">
+        <div class="hero-stat-num">40,000<span>+</span></div>
+        <div class="hero-stat-label">HS codes covered</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">220<span>+</span></div>
+        <div class="hero-stat-label">Jurisdictions</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">89<span>%</span></div>
+        <div class="hero-stat-label">Accuracy at 10-digit</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">&lt;3<span>s</span></div>
+        <div class="hero-stat-label">Classification time</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTEGRATION STRIP -->
+  <div class="integration-strip">
+    <div class="integration-scroll">
+      <span>SAP Integration</span>
+      <span>Oracle NetSuite</span>
+      <span>Shopify</span>
+      <span>WooCommerce</span>
+      <span>Flexport</span>
+      <span>FedEx Trade Networks</span>
+      <span>DHL GTM</span>
+      <span>Customs Broker APIs</span>
+      <span>ERP Connectors</span>
+      <span>REST API</span>
+      <span>SAP Integration</span>
+      <span>Oracle NetSuite</span>
+      <span>Shopify</span>
+      <span>WooCommerce</span>
+      <span>Flexport</span>
+      <span>FedEx Trade Networks</span>
+      <span>DHL GTM</span>
+      <span>Customs Broker APIs</span>
+      <span>ERP Connectors</span>
+      <span>REST API</span>
+    </div>
+  </div>
+
+  <!-- PROBLEM -->
+  <section class="section" id="problem">
+    <div class="section-tag">The problem</div>
+    <h2 class="section-title reveal">Trade compliance is<br>broken by design.</h2>
+    <p class="section-subtitle reveal">Every cross-border shipment forces your team through a gauntlet of manual classification, shifting duty tables, and compliance risk — while regulators keep moving the goalposts.</p>
+
+    <div class="pain-grid">
+      <div class="pain-card reveal">
+        <div class="pain-icon">📋</div>
+        <div class="pain-title">40,000 HS Codes, Zero Clarity</div>
+        <div class="pain-desc">The Harmonized System spans over 40,000 codes. Expert classifiers disagree on over 30% of products. Misclassification triggers delayed shipments, fines, and CBP audits — often years later.</div>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-icon">💸</div>
+        <div class="pain-title">Brokers Charge for Opacity</div>
+        <div class="pain-desc">Licensed customs brokers charge $150–$500 per classification. High-volume importers spend hundreds of thousands annually for outcomes they can't verify, audit, or improve.</div>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-icon">🔄</div>
+        <div class="pain-title">Rules Change Constantly</div>
+        <div class="pain-desc">WCO updates HS codes every five years. Country-level tariff schedules change faster. A valid classification in January may carry surcharges by March — and your ERP won't tell you.</div>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-icon">🚨</div>
+        <div class="pain-title">Sanctions Screening is Manual</div>
+        <div class="pain-desc">OFAC, EU, UN and BIS denied-party lists update daily. A single sanctioned counterparty in your supply chain exposes you to criminal liability. Manual screening doesn't scale.</div>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-icon">🤝</div>
+        <div class="pain-title">FTA Benefits Left Unclaimed</div>
+        <div class="pain-desc">Most SMEs systematically miss duty savings available under USMCA, CPTPP, EU-Korea, and other FTAs because eligibility rules are too complex to apply without specialist counsel.</div>
+      </div>
+      <div class="pain-card reveal">
+        <div class="pain-icon">📊</div>
+        <div class="pain-title">No Audit Trail, No Defense</div>
+        <div class="pain-desc">When customs authorities question a classification decision years later, importers must reconstruct the rationale from email threads and spreadsheets — or pay the assessment.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCT -->
+  <section class="section section-amber" id="product">
+    <div class="section-tag">The solution</div>
+    <h2 class="section-title reveal">One platform.<br>Full compliance stack.</h2>
+    <p class="section-subtitle reveal">Trackera's AI engine covers every layer of trade compliance — from first-pass classification to duty calculation, screening, and FTA optimization — with documented reasoning at every step.</p>
+
+    <div class="product-layout">
+      <div class="product-modules" id="module-list">
+
+        <div class="product-module active" onclick="activateModule(this, 0)">
+          <div class="module-head">
+            <span class="module-num">01</span>
+            <span class="module-name">HS Code Classification</span>
+          </div>
+          <p class="module-desc">Paste a product description, upload a spec sheet, or push via API. Trackera's multi-model AI returns the correct 6–10 digit HS code with confidence score, WCO classification rationale, and full audit log — in under 3 seconds. Bulk-classify entire SKU catalogs overnight.</p>
+        </div>
+
+        <div class="product-module" onclick="activateModule(this, 1)">
+          <div class="module-head">
+            <span class="module-num">02</span>
+            <span class="module-name">Duty & Tax Calculator</span>
+          </div>
+          <p class="module-desc">Landed cost calculations across 220+ jurisdictions, updated daily. Factor in origin country, shipping terms, product value, and applicable trade remedies — anti-dumping, safeguards, countervailing duties — for a true total landed cost before you commit to the shipment.</p>
+        </div>
+
+        <div class="product-module" onclick="activateModule(this, 2)">
+          <div class="module-head">
+            <span class="module-num">03</span>
+            <span class="module-name">Sanctions & Denied-Party Screening</span>
+          </div>
+          <p class="module-desc">Screen counterparties, vessels, and goods against OFAC SDN, EU Consolidated, UN Security Council, BIS Entity List, and 40+ additional lists — updated within hours of publication. Fuzzy-matching logic catches name variations. Full audit trail for regulatory defense.</p>
+        </div>
+
+        <div class="product-module" onclick="activateModule(this, 3)">
+          <div class="module-head">
+            <span class="module-num">04</span>
+            <span class="module-name">FTA Eligibility Engine</span>
+          </div>
+          <p class="module-desc">Automatically evaluate shipment eligibility under USMCA, CPTPP, ASEAN, EU-Korea, AfCFTA, and 60+ active FTAs. Map rules-of-origin requirements, generate certificate-of-origin guidance, and quantify duty savings you're currently leaving on the table.</p>
+        </div>
+
+      </div>
+
+      <div class="product-demo">
+        <div class="demo-window">
+          <div class="demo-titlebar">
+            <div class="demo-dot"></div>
+            <div class="demo-dot"></div>
+            <div class="demo-dot"></div>
+            <div class="demo-url">app.trackera.io / classify</div>
+          </div>
+          <div class="demo-body">
+            <div class="demo-label">Product Description</div>
+            <div class="demo-input-row">
+              <div class="demo-input">Lithium-ion battery pack, 48V 20Ah, electric bicycle application</div>
+              <button class="demo-btn">Classify →</button>
+            </div>
+            <div class="demo-result">
+              <div class="demo-result-head">
+                <div class="demo-hs-code">8507.60.00</div>
+                <div class="demo-confidence">97.3% confidence</div>
+              </div>
+              <div class="demo-result-desc">
+                Lithium-ion accumulators — Chapter 85, Electrical machinery. Classified under HS 8507.60, covering lithium-ion storage cells and battery packs. Confirmed against WCO Explanatory Note 85.07(b) and CBP HQ ruling H298301.
+              </div>
+              <div style="margin-bottom:12px">
+                <div class="demo-label" style="margin-bottom:8px">Duty rates by destination</div>
+                <div class="demo-duty-row">
+                  <div class="demo-duty-item">
+                    <div class="demo-duty-country">US (MFN)</div>
+                    <div class="demo-duty-rate">3.4%</div>
+                  </div>
+                  <div class="demo-duty-item">
+                    <div class="demo-duty-country">EU (MFN)</div>
+                    <div class="demo-duty-rate">2.7%</div>
+                  </div>
+                  <div class="demo-duty-item">
+                    <div class="demo-duty-country">India</div>
+                    <div class="demo-duty-rate">15.0%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="demo-flag">
+                ✓ USMCA eligible — origin requirements met. Est. saving: $0 duty
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section section-dark" id="how">
+    <div class="section-tag">Process</div>
+    <h2 class="section-title reveal">From description to clearance.<br>Automated end-to-end.</h2>
+    <p class="section-subtitle reveal">Trackera connects to your existing workflow — ERP, OMS, or direct API — and handles the compliance stack without changing how your team operates.</p>
+
+    <div class="steps-layout">
+      <div class="step reveal">
+        <div class="step-circle">1</div>
+        <div class="step-title">Ingest Products</div>
+        <div class="step-desc">Connect your product catalog via API, CSV upload, or direct ERP integration. Trackera accepts product descriptions, part numbers, technical specs, and images.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-circle">2</div>
+        <div class="step-title">AI Classification</div>
+        <div class="step-desc">The classification engine cross-references your product data against the WCO Nomenclature, CBP rulings database, and country-specific tariff schedules to determine the correct code.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-circle">3</div>
+        <div class="step-title">Compliance Check</div>
+        <div class="step-desc">Every shipment is automatically screened against sanctions lists, FTA eligibility is evaluated, and landed costs are calculated — all before the goods leave the warehouse.</div>
+      </div>
+      <div class="step reveal">
+        <div class="step-circle">4</div>
+        <div class="step-title">Ship with Confidence</div>
+        <div class="step-desc">Export audit-ready documentation, push classifications to your customs broker, and maintain a searchable record of every decision for regulatory defense.</div>
+      </div>
+    </div>
+  </section>
+
+</div>
+<!-- ══════════════ END HOME PAGE ══════════════ -->
+
+
+<!-- ══════════════ FOUNDER PAGE ══════════════ -->
+<div id="page-founder" class="page-section">
+
+  <!-- spacer for nav -->
+  <div style="height: 64px;"></div>
+
+  <section class="section" style="padding-top: 80px;">
+    <div class="section-tag">The builder</div>
+
+    <div class="founder-layout">
+      <div class="founder-portrait">
+        <div class="founder-initials">PJ</div>
+        <div class="founder-portrait-accent"></div>
+        <div class="founder-portrait-placeholder">
+          <div class="founder-badge">Founder & CEO</div>
+          <div class="founder-card-name">Pratyush Jena</div>
+        </div>
+      </div>
+
+      <div class="founder-content">
+        <h1 class="founder-name">Pratyush<br>Jena</h1>
+        <div class="founder-title">FOUNDER & CEO · TRACKERA</div>
+
+        <p class="founder-bio">
+          Pratyush has spent years at the intersection of <strong>international trade, regulatory systems, and applied AI</strong>. His obsession with trade compliance began watching companies — from SME importers to mid-market manufacturers — lose thousands on avoidable misclassifications and unclaimed FTA benefits.
+        </p>
+
+        <p class="founder-bio">
+          Before founding Trackera, Pratyush worked closely with logistics operations and supply chain teams navigating the complexity of multi-jurisdiction compliance. He saw firsthand how <strong>manual processes, broker dependency, and regulatory opacity</strong> created systemic risk — and a massive opportunity for a purpose-built AI solution.
+        </p>
+
+        <div class="founder-thesis">
+          <p>"Global trade is governed by rules written in languages most businesses don't speak. Tariff schedules, nomenclature updates, FTA rules-of-origin — these aren't edge cases. They're the foundation that determines whether a shipment makes money or loses it. Trackera exists because that knowledge should be accessible to every importer and exporter, not just the ones who can afford $300/hr specialists."</p>
+          <div class="attribution">— PRATYUSH JENA, TRACKERA</div>
+        </div>
+
+        <div class="founder-links">
+          <a href="#" class="founder-link">↗ LinkedIn</a>
+          <a href="#" class="founder-link">↗ Twitter/X</a>
+          <a href="mailto:pratyush@trackera.io" class="founder-link">✉ pratyush@trackera.io</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Founder philosophy cards -->
+    <div class="pain-grid" style="margin-top: 80px;">
+      <div class="pain-card">
+        <div class="pain-icon">🧠</div>
+        <div class="pain-title">AI-First, Not AI-Washed</div>
+        <div class="pain-desc">Trackera's classification engine was built from the ground up for trade nomenclature — not a general-purpose LLM wrapper. Purpose-built models trained on WCO rulings, CBP decisions, and live tariff data.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">🏗️</div>
+        <div class="pain-title">Infrastructure Thinking</div>
+        <div class="pain-desc">Trade compliance isn't a feature — it's infrastructure. Pratyush's vision is for Trackera to become the compliance layer that every importer and exporter depends on, the way businesses depend on payment rails.</div>
+      </div>
+      <div class="pain-card">
+        <div class="pain-icon">📈</div>
+        <div class="pain-title">$8.75B by 2033</div>
+        <div class="pain-desc">The global trade compliance AI market was $1.14B in 2024 and is growing at 25.1% CAGR. Trackera is positioned at the core of this market — classification + calculation + screening in a single platform.</div>
+      </div>
+    </div>
+  </section>
+</div>
+<!-- ══════════════ END FOUNDER PAGE ══════════════ -->
+
+
+<!-- ══════════════ PRICING PAGE ══════════════ -->
+<div id="page-pricing" class="page-section">
+
+  <div style="height: 64px;"></div>
+
+  <section class="section">
+    <div class="section-tag">Pricing</div>
+    <h2 class="section-title reveal">Predictable compliance.<br>No surprises.</h2>
+    <p class="section-subtitle reveal">No per-classification fees that punish growth. Flat tiers sized for your shipment volume — from first-time importers to enterprise logistics teams.</p>
+
+    <div class="pricing-grid">
+
+      <div class="pricing-card">
+        <div class="pricing-tier">Starter</div>
+        <div class="pricing-price"><sup>$</sup>299<sub>/mo</sub></div>
+        <div class="pricing-desc">For SMEs and first-time importers getting trade compliance right from day one.</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> 500 classifications/month</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Duty calculator — 50 jurisdictions</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Sanctions screening — OFAC + EU</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> 10 FTA checks/month</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Audit log — 12 months</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> REST API access</div>
+        <a href="#" class="pricing-cta" onclick="showPage('contact')">Start Free Trial</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="pricing-badge">Most Popular</div>
+        <div class="pricing-tier">Growth</div>
+        <div class="pricing-price"><sup>$</sup>899<sub>/mo</sub></div>
+        <div class="pricing-desc">For growing importers and mid-market teams with high SKU volume and multiple trade lanes.</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> 5,000 classifications/month</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Duty calculator — 220+ jurisdictions</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Full sanctions screening — 40+ lists</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Unlimited FTA eligibility checks</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Bulk catalog classification</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Audit log — unlimited</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Webhook &amp; ERP connectors</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Priority support</div>
+        <a href="#" class="pricing-cta" onclick="showPage('contact')">Start Free Trial</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-tier">Enterprise</div>
+        <div class="pricing-price" style="font-size: 32px; padding-top: 6px;">Custom</div>
+        <div class="pricing-desc">For logistics providers, customs brokers, and large-scale importers with complex compliance programs.</div>
+        <div class="pricing-divider"></div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Unlimited classifications</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Dedicated compliance AI model</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> White-label API option</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> Custom jurisdiction builds</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> SOC 2 BAA + data residency</div>
+        <div class="pricing-feature"><span class="pricing-check">✦</span> SLA guarantee + dedicated CSM</div>
+        <a href="#" class="pricing-cta" onclick="showPage('contact')">Contact Sales</a>
+      </div>
+
+    </div>
+  </section>
+</div>
+<!-- ══════════════ END PRICING PAGE ══════════════ -->
+
+
+<!-- ══════════════ CONTACT PAGE ══════════════ -->
+<div id="page-contact" class="page-section">
+
+  <div style="height: 64px;"></div>
+
+  <section class="section" style="max-width: 700px; margin: 0 auto;">
+    <div class="section-tag">Early Access</div>
+    <h2 class="section-title">Get early access<br>to Trackera.</h2>
+    <p class="section-subtitle" style="margin-bottom: 48px;">We're onboarding a limited cohort of import/export teams. Tell us about your trade operations and we'll be in touch within 24 hours.</p>
+
+    <form onsubmit="handleSubmit(event)" style="display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <label style="display: block; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">First Name</label>
+          <input type="text" placeholder="Arjun" style="width: 100%; padding: 14px 16px; border: 1.5px solid var(--rule); border-radius: 8px; background: transparent; font-family: 'Instrument Sans', sans-serif; font-size: 15px; color: var(--ink); outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--rule)'">
+        </div>
+        <div>
+          <label style="display: block; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">Last Name</label>
+          <input type="text" placeholder="Mehta" style="width: 100%; padding: 14px 16px; border: 1.5px solid var(--rule); border-radius: 8px; background: transparent; font-family: 'Instrument Sans', sans-serif; font-size: 15px; color: var(--ink); outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--rule)'">
+        </div>
+      </div>
+      <div>
+        <label style="display: block; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">Work Email</label>
+        <input type="email" placeholder="arjun@company.com" style="width: 100%; padding: 14px 16px; border: 1.5px solid var(--rule); border-radius: 8px; background: transparent; font-family: 'Instrument Sans', sans-serif; font-size: 15px; color: var(--ink); outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--rule)'">
+      </div>
+      <div>
+        <label style="display: block; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">Company</label>
+        <input type="text" placeholder="Your company name" style="width: 100%; padding: 14px 16px; border: 1.5px solid var(--rule); border-radius: 8px; background: transparent; font-family: 'Instrument Sans', sans-serif; font-size: 15px; color: var(--ink); outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--rule)'">
+      </div>
+      <div>
+        <label style="display: block; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">Monthly shipment volume</label>
+        <select style="width: 100%; padding: 14px 16px; border: 1.5px solid var(--rule); border-radius: 8px; background: var(--surface); font-family: 'Instrument Sans', sans-serif; font-size: 15px; color: var(--ink); outline: none; appearance: none; cursor: pointer;">
+          <option>1–50 shipments/month</option>
+          <option>50–500 shipments/month</option>
+          <option>500–5,000 shipments/month</option>
+          <option>5,000+ shipments/month</option>
+        </select>
+      </div>
+      <div>
+        <label style="display: block; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; color: var(--muted); text-transform: uppercase; margin-bottom: 8px;">Biggest compliance pain point</label>
+        <textarea rows="4" placeholder="e.g. misclassification risk, duty calculation errors, FTA claims, sanctions screening..." style="width: 100%; padding: 14px 16px; border: 1.5px solid var(--rule); border-radius: 8px; background: transparent; font-family: 'Instrument Sans', sans-serif; font-size: 15px; color: var(--ink); outline: none; resize: vertical; transition: border-color 0.2s;" onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--rule)'"></textarea>
+      </div>
+      <button type="submit" class="btn-primary" style="align-self: flex-start; border: none; cursor: pointer; font-size: 15px; padding: 16px 40px;">Request Early Access →</button>
+    </form>
+
+    <div id="form-success" style="display:none; margin-top: 24px; background: var(--amber-pale); border: 1px solid var(--rule-warm); border-radius: 10px; padding: 24px 28px;">
+      <div style="font-family: 'Syne', sans-serif; font-weight: 700; font-size: 18px; margin-bottom: 8px;">You're on the list.</div>
+      <div style="font-size: 14.5px; color: var(--muted);">Pratyush will personally review your request and reach out within 24 hours. We'll start with a 20-minute discovery call to understand your trade lanes and classification volume.</div>
+    </div>
+  </section>
+</div>
+<!-- ══════════════ END CONTACT PAGE ══════════════ -->
+
+
+<!-- SHARED CTA (shown on home + pricing) -->
+<div id="shared-cta">
+  <section class="cta-section">
+    <h2 class="cta-headline">Your next shipment<br>shouldn't be a <em>compliance bet.</em></h2>
+    <p class="cta-sub">Join the waitlist. Get classified, calculated, and cleared — before the goods leave the dock.</p>
+    <div class="cta-actions">
+      <a href="#" class="btn-amber" onclick="showPage('contact')">Request Early Access</a>
+      <a href="#" class="btn-ghost" onclick="showPage('founder')">Meet the Founder</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="footer-logo">trackera</div>
+        <div class="footer-tagline">AI-powered customs & trade compliance. HS classification, duty calculation, sanctions screening, and FTA optimization in one platform.</div>
+      </div>
+      <div class="footer-cols">
+        <div>
+          <div class="footer-col-title">Product</div>
+          <ul class="footer-links">
+            <li><a href="#" onclick="showPage('home')">HS Classification</a></li>
+            <li><a href="#" onclick="showPage('home')">Duty Calculator</a></li>
+            <li><a href="#" onclick="showPage('home')">Sanctions Screening</a></li>
+            <li><a href="#" onclick="showPage('home')">FTA Engine</a></li>
+            <li><a href="#" onclick="showPage('home')">API Docs</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Company</div>
+          <ul class="footer-links">
+            <li><a href="#" onclick="showPage('founder')">About</a></li>
+            <li><a href="#" onclick="showPage('founder')">Founder</a></li>
+            <li><a href="#" onclick="showPage('pricing')">Pricing</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Careers</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Legal</div>
+          <ul class="footer-links">
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">GDPR</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 Trackera. All rights reserved.</div>
+      <div class="footer-legal">
+        <a href="mailto:pratyush@trackera.io">pratyush@trackera.io</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // PAGE ROUTING
+  function showPage(pageId) {
+    document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+    const page = document.getElementById('page-' + pageId);
+    if (page) {
+      page.classList.add('active');
+    }
+    const sharedCta = document.getElementById('shared-cta');
+    sharedCta.style.display = (pageId === 'contact') ? 'none' : 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return false;
+  }
+
+  function scrollTo(selector) {
+    setTimeout(() => {
+      const el = document.querySelector(selector);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+
+  // MODULE TABS
+  function activateModule(el, idx) {
+    document.querySelectorAll('.product-module').forEach(m => m.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  // FORM
+  function handleSubmit(e) {
+    e.preventDefault();
+    document.getElementById('form-success').style.display = 'block';
+    e.target.style.display = 'none';
+  }
+
+  // SCROLL REVEAL
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(el => {
+      if (el.isIntersecting) {
+        el.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // HAMBURGER (simple toggle)
+  function toggleMenu() {
+    const links = document.querySelector('.nav-links');
+    if (links.style.display === 'flex') {
+      links.style.display = 'none';
+    } else {
+      links.style.display = 'flex';
+      links.style.flexDirection = 'column';
+      links.style.position = 'fixed';
+      links.style.top = '64px';
+      links.style.left = '0';
+      links.style.right = '0';
+      links.style.background = 'var(--surface)';
+      links.style.padding = '24px 32px';
+      links.style.borderBottom = '1px solid var(--rule)';
+      links.style.gap = '20px';
+      links.style.zIndex = '99';
+    }
+  }
+
+  // DEMO BUTTON animation
+  document.querySelector('.demo-btn').addEventListener('click', function() {
+    this.textContent = 'Classifying...';
+    this.style.opacity = '0.7';
+    setTimeout(() => {
+      this.textContent = 'Classify →';
+      this.style.opacity = '1';
+    }, 1200);
+  });
+
+  // Show shared CTA by default
+  document.getElementById('shared-cta').style.display = 'block';
+</script>
+</body>
+</html>
